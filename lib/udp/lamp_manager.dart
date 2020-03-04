@@ -1,7 +1,6 @@
 import 'package:fl_lamp/udp/udp_manager.dart';
 
 class LampManager {
-  UdpManager _udpManager;
 
   LampManager._internal();
 
@@ -12,10 +11,9 @@ class LampManager {
   }
 
   init() {
-    _udpManager = UdpManager();
   }
 
   void getLampState() {
-    _udpManager.send("GET");
+    UdpManager.send("GET");
   }
 }

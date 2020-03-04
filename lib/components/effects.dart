@@ -14,7 +14,6 @@ class Effects extends StatefulWidget {
 }
 
 class _Effects extends State<Effects> {
-  static UdpManager _udpManager = new UdpManager();
 
   String text = EFFECTS[LampState.currentMode];
 
@@ -25,7 +24,7 @@ class _Effects extends State<Effects> {
 
   @override
   Widget build(BuildContext context) {
-    _udpManager.addCallBack(parseRecivedState);
+    UdpManager.addCallBack(parseRecivedState);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -54,7 +53,7 @@ class _Effects extends State<Effects> {
                           setState(() {
                             LampState.currentMode = position;
                             text = EFFECTS[LampState.currentMode];
-                            _udpManager.sendSliderCommand(
+                            UdpManager.sendCommand(
                                 COMMANDS.EFF, LampState.currentMode);
                             LampState.currentMode = LampState.currentMode;
                           })
@@ -90,7 +89,7 @@ class _Effects extends State<Effects> {
                             onChangeEnd: (double newValue) {
                               setState(() {
                                 LampState.scale = newValue.round();
-                                _udpManager.sendSliderCommand(
+                                UdpManager.sendCommand(
                                     COMMANDS.SCA, LampState.scale);
                               });
                             },
@@ -126,7 +125,7 @@ class _Effects extends State<Effects> {
                         onChanged: (newSpeed) {
                           setState(() {
                             LampState.speed = newSpeed.round();
-                            _udpManager.sendSliderCommand(
+                            UdpManager.sendCommand(
                                 COMMANDS.SPD, LampState.speed);
                           });
                         })),
@@ -150,7 +149,7 @@ class _Effects extends State<Effects> {
                         onChanged: (newBrightness) {
                           setState(() {
                             LampState.brightness = newBrightness.round();
-                            _udpManager.sendSliderCommand(
+                            UdpManager.sendCommand(
                                 COMMANDS.BRI, LampState.brightness);
                           });
                         })),
@@ -167,10 +166,10 @@ class _Effects extends State<Effects> {
         onPressed: () {
           setState(() {
             if (LampState.isTurnedOn) {
-              _udpManager.sendSliderCommand(COMMANDS.P_OFF, null);
+              UdpManager.sendCommand(COMMANDS.P_OFF, null);
               LampState.isTurnedOn = false;
             } else {
-              _udpManager.sendSliderCommand(COMMANDS.P_ON, null);
+              UdpManager.sendCommand(COMMANDS.P_ON, null);
               LampState.isTurnedOn = true;
             }
           });

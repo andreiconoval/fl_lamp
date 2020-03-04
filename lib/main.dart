@@ -9,11 +9,9 @@ import 'components/effects.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-   UdpManager _udpManager =
-      UdpManager().init("192.168.1.3", 8888);
-
   @override
   Widget build(BuildContext context) {
+    UdpManager.init("192.168.1.3", 8888);
     return MaterialApp(
       title: 'UDP Sender',
       theme: ThemeData(
@@ -34,7 +32,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
- 
   Choice _selectedChoice = choices[0]; // The app's "state".
 
   static const TextStyle optionStyle =
@@ -54,8 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
       _selectedChoice = choice;
     });
   }
-
-
 
   static List<Widget> _widgetOptions = <Widget>[
     Connection(),

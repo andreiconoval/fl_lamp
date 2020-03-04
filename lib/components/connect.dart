@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 class Connection extends StatelessWidget {
   final ipTextController = TextEditingController();
   final portTextController = TextEditingController();
-  final _udpManger = new UdpManager();
   @override
 
   void callBack(){
      
   }
   Widget build(BuildContext context) {
-    _udpManger.addCallBack(callBack);
+    UdpManager.addCallBack(callBack);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -61,8 +60,8 @@ class Connection extends StatelessWidget {
             new Expanded(
                 child: RaisedButton(
                   onPressed: () {
-                    _udpManger.setIpAddress(ipTextController.text);
-                    _udpManger.sendSliderCommand(COMMANDS.GET,null);
+                    UdpManager.setIpAddress(ipTextController.text);
+                    UdpManager.sendCommand(COMMANDS.GET,null);
                   },
                   color: Colors.yellowAccent,
                   colorBrightness: Brightness.light,
