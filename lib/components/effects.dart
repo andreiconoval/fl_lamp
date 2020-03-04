@@ -16,25 +16,10 @@ class Effects extends StatefulWidget {
 class _Effects extends State<Effects> {
   static UdpManager _udpManager = new UdpManager();
 
-  
-  String text = EFFECTS[currentMode];
+  String text = EFFECTS[LampState.currentMode];
 
-  void parseRecivedState(String curr) {
-    var splitedC = curr.split(" ");
-          print(splitedC[0]);
-
-    if (splitedC[0] == "CURR") {
-      setLampState(splitedC);
-    }
-  }
-
-  void setLampState(List<String> stateList) {
+  void parseRecivedState() {
     setState(() {
-      isConnected = true;
-      currentMode = int.parse(stateList[1]);
-      brightness = int.parse(stateList[2]);
-      speed = int.parse(stateList[3]);
-      scale = int.parse(stateList[4]);
     });
   }
 
@@ -67,15 +52,15 @@ class _Effects extends State<Effects> {
                       return GestureDetector(
                         onTap: () => {
                           setState(() {
-                            currentMode = position;
-                            text = EFFECTS[currentMode];
+                            LampState.currentMode = position;
+                            text = EFFECTS[LampState.currentMode];
                             _udpManager.sendSliderCommand(
-                                COMMANDS.EFF, currentMode);
-                            currentMode = currentMode;
+                                COMMANDS.EFF, LampState.currentMode);
+                            LampState.currentMode = LampState.currentMode;
                           })
                         },
                         child: Card(
-                          color: currentMode == position
+                          color: LampState.currentMode == position
                               ? Colors.blueAccent
                               : Colors.white,
                           child: Padding(
@@ -101,12 +86,12 @@ class _Effects extends State<Effects> {
                         child: RotatedBox(
                           quarterTurns: 3,
                           child: Slider(
-                            value: scale.toDouble(),
+                            value: LampState.scale.toDouble(),
                             onChangeEnd: (double newValue) {
                               setState(() {
-                                scale = newValue.round();
+                                LampState.scale = newValue.round();
                                 _udpManager.sendSliderCommand(
-                                    COMMANDS.SCA, scale);
+                                    COMMANDS.SCA, LampState.scale);
                               });
                             },
                             onChanged: (double newValue) {},
@@ -135,14 +120,14 @@ class _Effects extends State<Effects> {
                         min: 0,
                         max: 256,
                         divisions: 256,
-                        value: speed.toDouble(),
+                        value: LampState.speed.toDouble(),
                         activeColor: Color(0xffff520d),
                         inactiveColor: Colors.blueGrey,
                         onChanged: (newSpeed) {
                           setState(() {
-                            speed = newSpeed.round();
+                            LampState.speed = newSpeed.round();
                             _udpManager.sendSliderCommand(
-                                COMMANDS.SPD, speed);
+                                COMMANDS.SPD, LampState.speed);
                           });
                         })),
               ],
@@ -159,14 +144,14 @@ class _Effects extends State<Effects> {
                         min: 0,
                         max: 256,
                         divisions: 256,
-                        value: brightness.toDouble(),
+                        value: LampState.brightness.toDouble(),
                         activeColor: Colors.yellow,
                         inactiveColor: Colors.blueGrey,
                         onChanged: (newBrightness) {
                           setState(() {
-                            brightness = newBrightness.round();
+                            LampState.brightness = newBrightness.round();
                             _udpManager.sendSliderCommand(
-                                COMMANDS.BRI, brightness);
+                                COMMANDS.BRI, LampState.brightness);
                           });
                         })),
               ],
@@ -181,17 +166,17 @@ class _Effects extends State<Effects> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
-            if (isTurnedOn) {
+            if (LampState.isTurnedOn) {
               _udpManager.sendSliderCommand(COMMANDS.P_OFF, null);
-              isTurnedOn = false;
+              LampState.isTurnedOn = false;
             } else {
               _udpManager.sendSliderCommand(COMMANDS.P_ON, null);
-              isTurnedOn = true;
+              LampState.isTurnedOn = true;
             }
           });
         },
         child: Icon(Icons.power_settings_new),
-        backgroundColor: isTurnedOn ? Colors.green : Colors.red,
+        backgroundColor: LampState.isTurnedOn ? Colors.green : Colors.red,
       ),
     );
   }

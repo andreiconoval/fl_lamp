@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:fl_lamp/libraries/constants.dart';
+import 'package:fl_lamp/libraries/lamp_state.dart';
 
 class UdpManager {
   InternetAddress _localIp;
@@ -53,8 +54,8 @@ class UdpManager {
       String message = new String.fromCharCodes(datagram.data);
       print(
           'Datagram from ${datagram.address.address}:${datagram.port}: ${message.trim()}');
-          print(_callBackResponseFunc);
-      _callBackResponseFunc(message.trim());
+      parseResponse(message);
+      _callBackResponseFunc();
     });
   }
 
@@ -72,6 +73,15 @@ class UdpManager {
     var query = value == null ? qCom : '$qCom $value';
     send(query);
   }
+
+  void parseResponse(String response) {
+    var splitedC = response.split(" ");
+    print(splitedC[0]);
+
+    if (splitedC[0] == "CURR") {
+      LampState.setLampState(splitedC);
+    }
+  }
 }
 
-typedef CallBackResponseFunc = void Function(String response);
+typedef CallBackResponseFunc = void Function();

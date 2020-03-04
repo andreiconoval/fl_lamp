@@ -7,7 +7,12 @@ class Connection extends StatelessWidget {
   final portTextController = TextEditingController();
   final _udpManger = new UdpManager();
   @override
+
+  void callBack(){
+     
+  }
   Widget build(BuildContext context) {
+    _udpManger.addCallBack(callBack);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
