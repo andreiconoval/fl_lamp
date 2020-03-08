@@ -11,7 +11,7 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    UdpManager.init("192.168.1.3", 8888);
+    UdpManager.init();
     return MaterialApp(
       title: 'UDP Sender',
       theme: ThemeData(

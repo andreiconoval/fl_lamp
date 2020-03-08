@@ -2,14 +2,23 @@ import 'package:fl_lamp/libraries/constants.dart';
 import 'package:fl_lamp/udp/udp_manager.dart';
 import 'package:flutter/material.dart';
 
-class Connection extends StatelessWidget {
+class Connection extends StatefulWidget {
+  @override
+  _Connection createState() => new _Connection();
+}
+
+const String discovery_service = "_workstation._tcp";
+
+class _Connection extends State<Connection> {
   final ipTextController = TextEditingController();
   final portTextController = TextEditingController();
-  @override
 
-  void callBack(){
-     
+  void callBack() { 
+    setState(() {
+      
+    });
   }
+
   Widget build(BuildContext context) {
     UdpManager.addCallBack(callBack);
     return Column(
@@ -61,12 +70,22 @@ class Connection extends StatelessWidget {
                 child: RaisedButton(
                   onPressed: () {
                     UdpManager.setIpAddress(ipTextController.text);
-                    UdpManager.sendCommand(COMMANDS.GET,null);
+                    UdpManager.sendCommand(COMMANDS.GET, null);
                   },
                   color: Colors.yellowAccent,
                   colorBrightness: Brightness.light,
                   child: const Text('Connect', style: TextStyle(fontSize: 20)),
                 ),
+                flex: 4),
+            new Expanded(child: const SizedBox(width: 20), flex: 3),
+          ],
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            new Expanded(child: const SizedBox(width: 20), flex: 3),
+            new Expanded(
+                child: Text(UdpManager.addressList.toString()),
                 flex: 4),
             new Expanded(child: const SizedBox(width: 20), flex: 3),
           ],
