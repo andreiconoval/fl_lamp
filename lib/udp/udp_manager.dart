@@ -10,8 +10,8 @@ class UdpManager {
   static int _remotePort;
   static RawDatagramSocket _socket;
   static CallBackResponseFunc _callBackResponseFunc;
-  static UpdateTopBarState _updateTopBarState;
-  static List<String> addressList=[];
+  static UpdateAppState _updateAppState;
+  static List<String> addressList = [];
 
   UdpManager._internal();
 
@@ -43,8 +43,8 @@ class UdpManager {
     _callBackResponseFunc = callBackResponseFunc;
   }
 
-  static void addUpdateTopBarState(UpdateTopBarState updateTopBarState){
-    _updateTopBarState = updateTopBarState;
+  static void addUpdateAppState(UpdateAppState updateAppState) {
+    _updateAppState = updateAppState;
   }
 
   static void send(String message) {
@@ -90,6 +90,10 @@ class UdpManager {
     if (splitedC[0] == "CURR") {
       LampState.setLampState(splitedC);
     }
+    if (splitedC[0] == "OK") {
+      LampState.isConnected = true;
+    }
+
   }
 
   static Future<void> discover() async {
@@ -107,26 +111,15 @@ class UdpManager {
         .then((RawDatagramSocket socket) {
       socket.listen((RawSocketEvent e) {
         Datagram datagram = socket.receive();
-        if (datagram == null) return;
-        String message = new String.fromCharCodes(datagram.data);
-        addressList.add(
-            'Datagram from ${datagram.address.address}:${datagram.port}: ${message.trim()}');
-             _callBackResponseFunc();
+        if (datagram == null)  return;
+          addressList.add(datagram.address.address);
+          _callBackResponseFunc();
+        
       });
       socket.send(text.codeUnits, host, DEFAULT_LAMP_PORT);
-      return;
-    });
-    
-  }
-
-    static Future<RawDatagramSocket> _ping2(InternetAddress host, int port, String text) {
-    RawDatagramSocket.bind(InternetAddress.anyIPv4, 0)
-        .then((RawDatagramSocket socket) {
-      return socket;
     });
   }
 }
 
 typedef CallBackResponseFunc = void Function();
-typedef UpdateTopBarState = void Function();
-
+typedef UpdateAppState = void Function();
