@@ -20,8 +20,8 @@ class BottomNavBar extends StatelessWidget {
           title: Text('Efects'),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          title: Text('Settings'),
+          icon: Icon(Icons.alarm),
+          title: Text('Alarm'),
         ),
       ],
       currentIndex: selectedIndex,

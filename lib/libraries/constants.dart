@@ -23,6 +23,10 @@ enum COMMANDS {
   BTN,
 }
 
+String commandToString(COMMANDS command) {
+  return command.toString().substring(command.toString().indexOf('.') + 1);
+}
+
 const EFFECTS = [
   "SPARKLES",
   "FIRE",

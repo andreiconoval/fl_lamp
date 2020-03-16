@@ -29,6 +29,8 @@ class UdpManager {
         _socket = socket;
         listen();
       });
+    } on SocketException catch (_) {
+      print('not connected');
     } catch (exception) {
       print(exception.toString());
     }
@@ -48,6 +50,7 @@ class UdpManager {
   }
 
   static void send(String message) {
+    if (_remoteIp == null) return;
     print("UDP Socket ready to send to group "
         "${_remoteIp.address}:$DEFAULT_LAMP_PORT");
     print(message);
@@ -55,17 +58,21 @@ class UdpManager {
   }
 
   static void listen() {
-    print('UDP Echo ready to receive');
-    print('${_socket.address.address}:${_socket.port}');
-    _socket.listen((RawSocketEvent e) {
-      Datagram datagram = _socket.receive();
-      if (datagram == null) return;
-      String message = new String.fromCharCodes(datagram.data);
-      print(
-          'Datagram from ${datagram.address.address}:${datagram.port}: ${message.trim()}');
-      _parseResponse(message);
-      _callBackResponseFunc();
-    });
+    try {
+      print('UDP Echo ready to receive');
+      print('${_socket.address.address}:${_socket.port}');
+      _socket.listen((RawSocketEvent e) {
+        Datagram datagram = _socket.receive();
+        if (datagram == null) return;
+        String message = new String.fromCharCodes(datagram.data);
+        print(
+            'Datagram from ${datagram.address.address}:${datagram.port}: ${message.trim()}');
+        _parseResponse(message);
+        _callBackResponseFunc();
+      });
+    } on SocketException catch (_) {
+      print('not connected');
+    }
   }
 
   static void setIpAddress(String ip) {
@@ -90,33 +97,47 @@ class UdpManager {
     if (splitedC[0] == "CURR") {
       LampState.setLampState(splitedC);
     }
+
+    if (splitedC[0] == "ALMS") {
+      LampState.setAlarmState(splitedC);
+    }
+
     if (splitedC[0] == "OK") {
       LampState.isConnected = true;
     }
-
   }
 
   static Future<void> discover() async {
-    final String subnet =
-        _localIp.address.substring(0, _localIp.address.lastIndexOf('.'));
-    for (int i = 1; i < 256; ++i) {
-      final host = '$subnet.$i';
-      final iAddr = new InternetAddress(host);
-      await _ping(iAddr, DEFAULT_LAMP_PORT, "DEB");
+    try {
+      final String subnet =
+          _localIp.address.substring(0, _localIp.address.lastIndexOf('.'));
+      for (int i = 1; i < 256; ++i) {
+        final host = '$subnet.$i';
+        final iAddr = new InternetAddress(host);
+
+        await _ping(iAddr, DEFAULT_LAMP_PORT, "DEB");
+      }
+    } on SocketException catch (_) {
+      print('not connected');
     }
   }
 
   static Future<void> _ping(InternetAddress host, int port, String text) {
     RawDatagramSocket.bind(InternetAddress.anyIPv4, 0)
         .then((RawDatagramSocket socket) {
-      socket.listen((RawSocketEvent e) {
-        Datagram datagram = socket.receive();
-        if (datagram == null)  return;
+     
+        socket.listen((RawSocketEvent e) {
+          Datagram datagram = socket.receive();
+          if (datagram == null) return;
           addressList.add(datagram.address.address);
           _callBackResponseFunc();
-        
-      });
-      socket.send(text.codeUnits, host, DEFAULT_LAMP_PORT);
+        });
+         try {
+        socket.send(text.codeUnits, host, DEFAULT_LAMP_PORT);
+      } on SocketException catch (_) {
+        print('not connected');
+        return;
+      }
     });
   }
 }
