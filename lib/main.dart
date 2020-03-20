@@ -47,7 +47,12 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selectedIndex = index;
 
-      if (index == 2) UdpManager.send(commandToString(COMMANDS.TMR_GET));
+      if (index == 2) UdpManager.send(commandToString(COMMANDS.ALM_GET));
+    });
+  }
+
+  void changeState(){
+    setState(() {
     });
   }
 
@@ -65,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
   @override
   Widget build(BuildContext context) {
+    UdpManager.addUpdateAppState(changeState);
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Color.fromARGB(255, 9, 139, 198),

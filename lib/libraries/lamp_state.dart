@@ -1,6 +1,7 @@
 library globals.lamp_state;
 
 import 'package:fl_lamp/widgets/day_alarm.dart';
+import 'package:flutter/material.dart';
 
 class LampState {
   static String ip = "";
@@ -15,7 +16,7 @@ class LampState {
   static bool useNtp = false;
   static bool buttonEnabled = true;
   static bool timerEnabled = false;
-  static DateTime dateTime = DateTime.now();
+  static TimeOfDay dateTime = TimeOfDay.now();
 
   static List<DayAlarm> daysAlarm = [
     DayAlarm(id: 1, name: 'Monday', isOn: false, minutes: 0),
@@ -42,27 +43,34 @@ class LampState {
     espMode = stateList[6] == '1' ? true : false;
     timerEnabled = stateList[7] == '1' ? true : false;
     buttonEnabled = stateList[8] == '1' ? true : false;
-    dateTime = DateTime.parse(stateList[10]);
+    dateTime = parseTime(stateList[10]);
   }
 
   static void setAlarmState(List<String> alarmState) {
     isConnected = true;
-    daysAlarm[1].isOn = alarmState[1] == '1' ? true : false;
-    daysAlarm[2].isOn = alarmState[2] == '1' ? true : false;
-    daysAlarm[3].isOn = alarmState[3] == '1' ? true : false;
-    daysAlarm[4].isOn = alarmState[4] == '1' ? true : false;
-    daysAlarm[5].isOn = alarmState[5] == '1' ? true : false;
-    daysAlarm[6].isOn = alarmState[6] == '1' ? true : false;
-    daysAlarm[7].isOn = alarmState[7] == '1' ? true : false;
+    daysAlarm[0].isOn = alarmState[1] == '1' ? true : false;
+    daysAlarm[1].isOn = alarmState[2] == '1' ? true : false;
+    daysAlarm[2].isOn = alarmState[3] == '1' ? true : false;
+    daysAlarm[3].isOn = alarmState[4] == '1' ? true : false;
+    daysAlarm[4].isOn = alarmState[5] == '1' ? true : false;
+    daysAlarm[5].isOn = alarmState[6] == '1' ? true : false;
+    daysAlarm[6].isOn = alarmState[7] == '1' ? true : false;
 
-    daysAlarm[1].minutes = int.parse(alarmState[8]);
-    daysAlarm[2].minutes = int.parse(alarmState[9]);
-    daysAlarm[3].minutes = int.parse(alarmState[10]);
-    daysAlarm[4].minutes = int.parse(alarmState[11]);
-    daysAlarm[5].minutes = int.parse(alarmState[12]);
-    daysAlarm[6].minutes = int.parse(alarmState[13]);
-    daysAlarm[7].minutes = int.parse(alarmState[14]);
+    daysAlarm[0].minutes = int.parse(alarmState[8]);
+    daysAlarm[1].minutes = int.parse(alarmState[9]);
+    daysAlarm[2].minutes = int.parse(alarmState[10]);
+    daysAlarm[3].minutes = int.parse(alarmState[11]);
+    daysAlarm[4].minutes = int.parse(alarmState[12]);
+    daysAlarm[5].minutes = int.parse(alarmState[13]);
+    daysAlarm[6].minutes = int.parse(alarmState[14]);
 
     wakeUpminutes = int.parse(alarmState[15]);
+  }
+
+  static TimeOfDay parseTime(String formattedString) {
+    var splitedString = formattedString.split(":");
+    var hours = int.parse(splitedString[0]);
+    var minutes = int.parse(splitedString[1]);
+    return new TimeOfDay(hour: hours, minute: minutes);
   }
 }

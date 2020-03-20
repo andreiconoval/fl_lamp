@@ -5,7 +5,7 @@ import 'package:fl_lamp/libraries/lamp_state.dart';
 
 class UdpManager {
   static InternetAddress _localIp;
-  static InternetAddress _remoteIp;
+  static InternetAddress remoteIp;
   static int _localPort;
   static int _remotePort;
   static RawDatagramSocket _socket;
@@ -50,11 +50,13 @@ class UdpManager {
   }
 
   static void send(String message) {
-    if (_remoteIp == null) return;
+    if (remoteIp == null) return;
     print("UDP Socket ready to send to group "
-        "${_remoteIp.address}:$DEFAULT_LAMP_PORT");
+        "${remoteIp.address}:$DEFAULT_LAMP_PORT");
     print(message);
-    _socket.send(message.codeUnits, _remoteIp, DEFAULT_LAMP_PORT);
+    _socket.send(message.codeUnits, remoteIp, DEFAULT_LAMP_PORT);
+    _updateAppState();
+    _callBackResponseFunc();
   }
 
   static void listen() {
@@ -63,12 +65,19 @@ class UdpManager {
       print('${_socket.address.address}:${_socket.port}');
       _socket.listen((RawSocketEvent e) {
         Datagram datagram = _socket.receive();
-        if (datagram == null) return;
+        if (datagram == null) {
+          LampState.isConnected = false;
+          _callBackResponseFunc();
+          _updateAppState();
+          return;
+        }
+        LampState.isConnected = true;
         String message = new String.fromCharCodes(datagram.data);
         print(
             'Datagram from ${datagram.address.address}:${datagram.port}: ${message.trim()}');
         _parseResponse(message);
         _callBackResponseFunc();
+        _updateAppState();
       });
     } on SocketException catch (_) {
       print('not connected');
@@ -76,7 +85,7 @@ class UdpManager {
   }
 
   static void setIpAddress(String ip) {
-    _remoteIp = new InternetAddress(ip);
+    remoteIp = new InternetAddress(ip);
   }
 
   static void setPort(String port) {
@@ -125,14 +134,13 @@ class UdpManager {
   static Future<void> _ping(InternetAddress host, int port, String text) {
     RawDatagramSocket.bind(InternetAddress.anyIPv4, 0)
         .then((RawDatagramSocket socket) {
-     
-        socket.listen((RawSocketEvent e) {
-          Datagram datagram = socket.receive();
-          if (datagram == null) return;
-          addressList.add(datagram.address.address);
-          _callBackResponseFunc();
-        });
-         try {
+      socket.listen((RawSocketEvent e) {
+        Datagram datagram = socket.receive();
+        if (datagram == null) return;
+        addressList.add(datagram.address.address);
+        _callBackResponseFunc();
+      });
+      try {
         socket.send(text.codeUnits, host, DEFAULT_LAMP_PORT);
       } on SocketException catch (_) {
         print('not connected');

@@ -1,4 +1,5 @@
 import 'package:fl_lamp/libraries/constants.dart';
+import 'package:fl_lamp/libraries/lamp_state.dart';
 import 'package:fl_lamp/udp/udp_manager.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,7 @@ class Connection extends StatefulWidget {
 const String discovery_service = "_workstation._tcp";
 
 class _Connection extends State<Connection> {
-  final ipTextController = TextEditingController();
+  final ipTextController = TextEditingController(text:UdpManager.remoteIp != null ? UdpManager.remoteIp.address: "");
   final portTextController = TextEditingController();
 
   void callBack() { 
@@ -69,12 +70,13 @@ class _Connection extends State<Connection> {
             new Expanded(
                 child: RaisedButton(
                   onPressed: () {
+                    LampState.isConnected = false;
                     UdpManager.setIpAddress(ipTextController.text);
                     UdpManager.sendCommand(COMMANDS.GET, null);
                   },
-                  color: Colors.yellowAccent,
+                  color:LampState.isConnected ? Colors.greenAccent: Colors.yellowAccent,
                   colorBrightness: Brightness.light,
-                  child: const Text('Connect', style: TextStyle(fontSize: 20)),
+                  child: LampState.isConnected ? Text('Connected', style: TextStyle(fontSize: 20)):Text('Connect', style: TextStyle(fontSize: 20)),
                 ),
                 flex: 4),
             new Expanded(child: const SizedBox(width: 20), flex: 3),
@@ -85,7 +87,7 @@ class _Connection extends State<Connection> {
           children: <Widget>[
             new Expanded(child: const SizedBox(width: 20), flex: 3),
             new Expanded(
-                child: Text(UdpManager.addressList.toString()),
+                child: Text( UdpManager.addressList.length > 0 ? UdpManager.addressList.toString(): "Nothing found"),
                 flex: 4),
             new Expanded(child: const SizedBox(width: 20), flex: 3),
           ],
